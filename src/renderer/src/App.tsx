@@ -69,8 +69,8 @@ const Home: React.FC = () => {
     setDirection(0);
   }, [direction]);
 
-  return (
-    <>
+  return (<>
+    <div className="main-container">
       <div className="title">
         IDGAF
       </div>
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -direction * 100, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-          >
+            >
             <ProgressComponent
               direction={direction} setDirection={setDirection}
               progress={progressState} setProgress={setProgressState}
@@ -97,12 +97,12 @@ const Home: React.FC = () => {
               file={file} setFile={setFile}
               fileType={fileType} setFileType={setFileType}
               abstractRange={abstractRange} setAbstractRange={setAbstractRange}
-            />
+              />
           </motion.div>
         </AnimatePresence>
       </div>
-    </>
-  )
+    </div>
+  </>)
 };
 
 export default function App() {

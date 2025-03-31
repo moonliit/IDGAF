@@ -49,8 +49,8 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
     <div style={{ textAlign: "center" }}>
       {pdfInfo ? (
         <>
-          <p><strong>File Name:</strong> {pdfInfo.name}</p>
-          <p><strong>Page Count:</strong> {pdfInfo.pages}</p>
+          <p className="wrapped"><strong>File Name:</strong> {pdfInfo.name}</p>
+          <p className="wrapped"><strong>Page Count:</strong> {pdfInfo.pages}</p>
 
           {/* Selection Mode with Centered and Spaced Items */}
           <div style={{
