@@ -23,6 +23,8 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
+    "framer-motion": "^12.6.2",
+    "pdfjs-dist": "^4.8.69",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.4.1"
   },

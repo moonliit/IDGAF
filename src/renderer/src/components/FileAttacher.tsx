@@ -1,5 +1,6 @@
 import { Progress, ProgressStateProps, FileProps, FileType, FileTypeProps } from "./TrackedState";
 import { Button } from "./Button";
+import { useEffect, useState } from "react";
 
 interface AttacherProps extends ProgressStateProps, FileProps, FileTypeProps {
   message: string
@@ -19,7 +20,7 @@ export const FileAttacher: React.FC<AttacherProps> = ({ message, progress, setPr
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files.length > 0) {
         const fileObject = event.target.files[0];
-        const obtainedFileType = extractFileType(fileObject); 
+        const obtainedFileType = extractFileType(fileObject);
         setFile(fileObject);
         setFileType(obtainedFileType);
       }
@@ -29,6 +30,9 @@ export const FileAttacher: React.FC<AttacherProps> = ({ message, progress, setPr
 		setProgress(Progress.ChoosingCourse);
 	};
 	const handleNext = () => {
+    if (file === null) {
+      return;
+    }
 		setProgress(Progress.SettingUpFile);
 	};
   
@@ -44,7 +48,7 @@ export const FileAttacher: React.FC<AttacherProps> = ({ message, progress, setPr
     
     <div className="prev-next-container">
       <Button title={"◀ Back"} action={handleBack}/>
-      <Button title={"Next ▶"} action={handleNext}/>
+      <Button title={"Next ▶"} action={handleNext} enabled={file !== null}/>
     </div>
   </>);
 };

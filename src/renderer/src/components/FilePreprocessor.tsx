@@ -1,17 +1,13 @@
-import { Progress, ProgressStateProps, FileProps, FileType, FileTypeProps } from "./TrackedState";
+import { Progress, ProgressStateProps, FileProps, FileType, FileTypeProps, AbstractRangeProps } from "./TrackedState";
 import { Button } from "./Button";
 
-interface PreprocessorProps extends ProgressStateProps, FileProps, FileTypeProps {
-  message: string
+import { PdfPreprocessor } from "./FileProcessors/PdfPreprocessor";
+
+interface PreprocessorProps extends ProgressStateProps, FileProps, FileTypeProps, AbstractRangeProps {
+  message
 }
 
-const PdfPreprocessor: React.FC<FileProps> = ({ file, setFile }) => {
-  return (<>
-
-  </>);
-};
-
-export const FilePreprocessor: React.FC<PreprocessorProps> = ({ message, progress, setProgress, fileType, setFileType, file, setFile }) => {
+export const FilePreprocessor: React.FC<PreprocessorProps> = ({ message, progress, setProgress, fileType, setFileType, file, setFile, abstractRange, setAbstractRange }) => {
   
   const handleBack = () => {
 		setProgress(Progress.AttachingFile);
@@ -20,26 +16,16 @@ export const FilePreprocessor: React.FC<PreprocessorProps> = ({ message, progres
 		//setProgress(Progress.SettingUpFile);
 	};
 
-  const InternalSwitch: React.FC<PreprocessorProps> = ({ message, progress, setProgress, fileType, setFileType, file, setFile }) => {
-    switch (fileType) {
-      case FileType.PDF:
-        return (<PdfPreprocessor
-          file={file} setFile={setFile}
-        />);
-      default:
-        return (<>what</>);
-    }
-  }
-
   return (<>
     <div className="cool-container">
       <label className="file-label">{message}</label>
-      <InternalSwitch
-        message={""}
-        progress={progress} setProgress={setProgress}
-        fileType={fileType} setFileType={setFileType}
-        file={file} setFile={setFile}
-      />
+      {fileType == FileType.PDF &&
+        <PdfPreprocessor
+          file={file} setFile={setFile}
+          abstractRange={abstractRange} setAbstractRange={setAbstractRange}
+        />
+      }
+      {fileType == FileType.None && <>what</>}
     </div>
 
     <div className="prev-next-container">

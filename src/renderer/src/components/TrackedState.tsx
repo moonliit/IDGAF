@@ -1,10 +1,10 @@
 // overall-Progress state
 
 export enum Progress {
-	NewAssignment,
-	ChoosingCourse,
-	AttachingFile,
-  SettingUpFile
+	NewAssignment = 0,
+	ChoosingCourse = 1,
+	AttachingFile = 2,
+  SettingUpFile = 3
 };
 
 export interface ProgressStateProps {
@@ -37,3 +37,17 @@ export interface FileTypeProps {
 	fileType: FileType,
 	setFileType: React.Dispatch<React.SetStateAction<FileType>>
 };
+
+// preprocessing args
+
+export interface AbstractRange {
+  start: number,
+  end: number
+};
+
+export interface AbstractRangeProps extends FileProps {
+  abstractRange: AbstractRange,
+  setAbstractRange: React.Dispatch<React.SetStateAction<AbstractRange>>
+};
+
+export interface InternalProps extends FileProps, AbstractRangeProps {}
