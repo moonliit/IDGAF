@@ -1,15 +1,20 @@
 import { Progress, ProgressStateProps } from "./TrackedState";
-import { Button } from "./Button";
 
 
 interface NewAssignmentProps extends ProgressStateProps {
-  message: string
+  message: string,
+  reset: (() => void)
 };
 
-export const NewAssignment: React.FC<NewAssignmentProps> = ({ message, progress, setProgress }) => {
+export const NewAssignment: React.FC<NewAssignmentProps> = ({ message, reset, progress, setProgress }) => {
+  const handleReset = () => {
+    reset();
+    setProgress(Progress.ChoosingCourse);
+  };
+  
   return (<>
     <div className="action cool-invisible">
-        <a className="new-assignment" target="_blank" rel="noreferrer" onClick={() => setProgress(Progress.ChoosingCourse)}>
+        <a className="new-assignment" target="_blank" rel="noreferrer" onClick={handleReset}>
           {message}
         </a>
     </div>

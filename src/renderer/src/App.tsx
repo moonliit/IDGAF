@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import { ChosenCourseProps, Progress, ProgressStateProps, FileProps, FileType, FileTypeProps, AbstractRange, AbstractRangeProps } from "./components/TrackedState"
+import { ChosenCourseProps, Progress, ProgressStateProps, FileProps, FileType, FileTypeProps, AbstractRange, AbstractRangeProps, ChosenTaskProps } from "./components/TrackedState"
 import { motion, AnimatePresence } from "framer-motion";
+import { courseChoices, taskChoices } from "./global";
 
 import { NewAssignment } from "./components/NewAssignment";
-import { CourseSelector } from "./components/ChoiceSelector";
+import { CourseSelector } from "./components/CourseSelector";
 import { FileAttacher } from "./components/FileAttacher";
 import { FilePreprocessor } from "./components/FilePreprocessor";
+import { TaskSelector } from "./components/TaskSelector";
+import { FinalAsk } from "./components/FinalAsk";
+import { AnswerDisplayer } from "./components/AnswerDisplayer";
 
-interface ProgressComponentsProps extends ProgressStateProps, ChosenCourseProps, FileProps, FileTypeProps, AbstractRangeProps {
+interface ProgressComponentsProps extends ProgressStateProps, ChosenCourseProps, FileProps, FileTypeProps, AbstractRangeProps, ChosenTaskProps {
   direction: number,
-	setDirection: React.Dispatch<React.SetStateAction<number>>
+	setDirection: React.Dispatch<React.SetStateAction<number>>,
+  reset: (() => void)
 }
 
-const ProgressComponent: React.FC<ProgressComponentsProps> = ({ direction, setDirection, progress, setProgress, course, setCourse, file, setFile, fileType, setFileType, abstractRange, setAbstractRange }) => {
+const ProgressComponent: React.FC<ProgressComponentsProps> = ({ direction, setDirection, reset, progress, setProgress, course, setCourse, file, setFile, fileType, setFileType, abstractRange, setAbstractRange, task, setTask }) => {
   
   const setProgressWrapper: React.Dispatch<React.SetStateAction<Progress>> = (( nextProgress: Progress ) => {
     if (progress < nextProgress) {
@@ -27,12 +32,13 @@ const ProgressComponent: React.FC<ProgressComponentsProps> = ({ direction, setDi
     case Progress.NewAssignment:
       return (<NewAssignment
         message={"New assignment"}
+        reset={reset}
         progress={progress} setProgress={setProgressWrapper}
       />);
     case Progress.ChoosingCourse:
       return (<CourseSelector
         message={"Choose a course: "}
-        options={["History", "Economics", "Other"]}
+        options={courseChoices}
         progress={progress} setProgress={setProgressWrapper}
         course={course} setCourse={setCourse}
       />);
@@ -50,23 +56,58 @@ const ProgressComponent: React.FC<ProgressComponentsProps> = ({ direction, setDi
         fileType={fileType} setFileType={setFileType}
         file={file} setFile={setFile}
         abstractRange={abstractRange} setAbstractRange={setAbstractRange}
-      />);     
+      />);
+    case Progress.ChoosingTask:
+      return (<TaskSelector
+        message={"Choose a task:"}
+        options={taskChoices}
+        progress={progress} setProgress={setProgressWrapper}
+        task={task} setTask={setTask}
+      />);
+    case Progress.FinalAsk:
+      return (<FinalAsk
+        message={"Are you ready?"}
+        progress={progress} setProgress={setProgressWrapper}
+      />);
+    case Progress.DisplayingAnswer:
+      return (<AnswerDisplayer
+        progress={progress} setProgress={setProgressWrapper}
+        course={course} setCourse={setCourse}
+        file={file} setFile={setFile}
+        fileType={fileType} setFileType={setFileType}
+        abstractRange={abstractRange} setAbstractRange={setAbstractRange}
+        task={task} setTask={setTask}
+      />);
   }
 };
-
-
 
 const Home: React.FC = () => {
   const [direction, setDirection] = useState<number>(0);
   const [progressState, setProgressState] = useState<Progress>(Progress.NewAssignment);
-  const [course, setCourse] = useState<string>("");
+  const [course, setCourse] = useState<string>(courseChoices[0]);
   const [file, setFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<FileType>(FileType.None);
-  const [abstractRange, setAbstractRange] = useState<AbstractRange>({ start: 1, end: 1 });
+  const [abstractRange, setAbstractRange] = useState<AbstractRange>({ full: true, start: 0, end: 0 });
+  const [task, setTask] = useState<string>(taskChoices[0]);
+
+  const handleReset = () => {
+    setDirection(0);
+    setProgressState(Progress.NewAssignment);
+    setCourse(courseChoices[0]);
+    setFile(null);
+    setFileType(FileType.None);
+    setAbstractRange({ full: true, start: 0, end: 0 });
+    setTask(taskChoices[0]);
+  };
 
   useEffect(() => {
+    if (direction === 0) return;
     setProgressState(progressState + direction);
-    setDirection(0);
+    const animationDuration: number = 1000;
+    const timeout = setTimeout(() => {
+      setDirection(0);
+    }, animationDuration);
+    return () => clearTimeout(timeout); 
   }, [direction]);
 
   return (<>
@@ -91,13 +132,15 @@ const Home: React.FC = () => {
             transition={{ duration: 0.4, ease: "easeInOut" }}
             >
             <ProgressComponent
+              reset={handleReset}
               direction={direction} setDirection={setDirection}
               progress={progressState} setProgress={setProgressState}
               course={course} setCourse={setCourse}
               file={file} setFile={setFile}
               fileType={fileType} setFileType={setFileType}
               abstractRange={abstractRange} setAbstractRange={setAbstractRange}
-              />
+              task={task} setTask={setTask}
+            />
           </motion.div>
         </AnimatePresence>
       </div>

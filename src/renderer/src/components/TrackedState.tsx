@@ -4,7 +4,10 @@ export enum Progress {
 	NewAssignment = 0,
 	ChoosingCourse = 1,
 	AttachingFile = 2,
-  SettingUpFile = 3
+  SettingUpFile = 3,
+  ChoosingTask = 4,
+  FinalAsk = 5,
+  DisplayingAnswer = 6
 };
 
 export interface ProgressStateProps {
@@ -41,6 +44,7 @@ export interface FileTypeProps {
 // preprocessing args
 
 export interface AbstractRange {
+  full: boolean,
   start: number,
   end: number
 };
@@ -51,3 +55,10 @@ export interface AbstractRangeProps extends FileProps {
 };
 
 export interface InternalProps extends FileProps, AbstractRangeProps {}
+
+// task args
+
+export interface ChosenTaskProps {
+	task: string,
+	setTask: React.Dispatch<React.SetStateAction<string>>
+};

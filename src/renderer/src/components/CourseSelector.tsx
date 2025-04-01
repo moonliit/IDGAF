@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Button } from "./Button";
 import { ChosenCourseProps, Progress, ProgressStateProps } from "./TrackedState";
 
-interface ChoiceProps extends ProgressStateProps, ChosenCourseProps {
+interface CourseProps extends ProgressStateProps, ChosenCourseProps {
 	message: string,
 	options: string[]
 };
 
-export const CourseSelector: React.FC<ChoiceProps> = ({ message, options, progress, setProgress, course, setCourse }) => {
-  const [choice, setChoice] = useState<string>(options[0]); // Stores selected value
+export const CourseSelector: React.FC<CourseProps> = ({ message, options, progress, setProgress, course, setCourse }) => {
+  const [choice, setChoice] = useState<string>(options.includes(course) ? course : "Other");
 
 	const handleBack = () => {
 		if (choice.toLowerCase() !== "other") {
@@ -43,7 +43,7 @@ export const CourseSelector: React.FC<ChoiceProps> = ({ message, options, progre
 				{choice.toLowerCase() === "other" && (
 					<input
 						type="text"
-						placeholder="Enter your own choice"
+						placeholder="Enter your own course"
 						value={course}
 						onChange={(e) => setCourse(e.target.value)}
 					/>

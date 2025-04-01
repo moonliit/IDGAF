@@ -1,10 +1,10 @@
 import { Progress, ProgressStateProps, FileProps, FileType, FileTypeProps, AbstractRangeProps } from "./TrackedState";
 import { Button } from "./Button";
 
-import { PdfPreprocessor } from "./FileProcessors/PdfPreprocessor";
+import { PdfPreprocessor } from "./FilePreprocessors/PdfPreprocessor";
 
 interface PreprocessorProps extends ProgressStateProps, FileProps, FileTypeProps, AbstractRangeProps {
-  message
+  message: string
 }
 
 export const FilePreprocessor: React.FC<PreprocessorProps> = ({ message, progress, setProgress, fileType, setFileType, file, setFile, abstractRange, setAbstractRange }) => {
@@ -13,7 +13,7 @@ export const FilePreprocessor: React.FC<PreprocessorProps> = ({ message, progres
 		setProgress(Progress.AttachingFile);
 	};
 	const handleNext = () => {
-		//setProgress(Progress.SettingUpFile);
+		setProgress(Progress.ChoosingTask);
 	};
 
   return (<>

@@ -14,7 +14,7 @@ interface PdfInfo {
 
 export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstractRange, setAbstractRange }) => {
   const [pdfInfo, setPdfInfo] = useState<PdfInfo | null>(null);
-  const [selectionMode, setSelectionMode] = useState<"all" | "range">("all");
+  const [selectionMode, setSelectionMode] = useState<"all" | "range">(abstractRange.full ? "all" : "range");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,7 +30,10 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
       });
 
       // Reset page range when a new PDF is loaded
-      setAbstractRange({ start: 1, end: pdf.numPages });
+      const newRange: AbstractRange = { full: true, start: 1, end: pdf.numPages };
+      if (abstractRange.start === 0 && abstractRange.end === 0) {
+        setAbstractRange(newRange);
+      }
     };
     reader.readAsArrayBuffer(file);
   }, [file]);
@@ -42,6 +45,7 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
       setError("Invalid range. Ensure start ≤ end and within page count.");
     } else {
       setError(null);
+      setAbstractRange({ start: start, end: end, full: (start === 1 && end === pdfInfo.pages) });
     }
   };
 
@@ -65,7 +69,10 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
                 name="selection"
                 value="all"
                 checked={selectionMode === "all"}
-                onChange={() => setSelectionMode("all")}
+                onChange={() => {
+                  setAbstractRange({ start: 1, end: pdfInfo.pages, full: true });
+                  setSelectionMode("all");
+                }}
               />
               All Pages
             </label>
@@ -92,7 +99,6 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
                 value={abstractRange.start}
                 onChange={(e) => {
                   const newStart = Number(e.target.value);
-                  setAbstractRange((prev) => ({ ...prev, start: newStart }));
                   validatePageRange(newStart, abstractRange.end);
                 }}
               />
@@ -104,7 +110,6 @@ export const PdfPreprocessor: React.FC<InternalProps> = ({ file, setFile, abstra
                 value={abstractRange.end}
                 onChange={(e) => {
                   const newEnd = Number(e.target.value);
-                  setAbstractRange((prev) => ({ ...prev, end: newEnd }));
                   validatePageRange(abstractRange.start, newEnd);
                 }}
               />
